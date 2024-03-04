@@ -1,5 +1,5 @@
-Author: Gabriel Larot
-Date: Mar 4, 2024
+# Author: Gabriel Larot
+# Date: Mar 4, 2024
 
 import random
 import math
