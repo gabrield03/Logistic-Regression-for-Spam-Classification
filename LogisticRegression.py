@@ -1,9 +1,6 @@
-# Name: Gabriel Larot
-# Email: gabriel.larot@sjsu.edu
-# ID: 016876301
-# Programming Assignment 1 - Logistic Regression
+Author: Gabriel Larot
+Date: Mar 4, 2024
 
-# can we use these for random number generation, e, and log?
 import random
 import math
 
@@ -16,20 +13,13 @@ class LogisticRegression:
     @property
     def mWeights(self):
         return self.__weights
-    
-    @mWeights.setter
-    def mWeights(self, newWeights):
-        self.__weights = newWeights
 
-    # Implement the sigmoid function - can we use math.exp here or is 2.71828 okay?
+    # Implement the sigmoid function
     def sigmoid(self, l_combination):
         return 1 / (1 + (math.exp(-1 * l_combination)))
 
-    '''
-    Helper function for prediction
-    Takes a test instance as input and outputs the probability of the label being 1
-    This function should call sigmoid()
-    '''
+    # Helper function for prediction
+    # Takes a test instance as input and outputs the probability of the label being 1
     def predictHelper(self, test_instance):
         pass_to_sig = sum([weight*int(feature) for weight, feature in zip(self.__weights, test_instance[:-1])])
         predicted_label = self.sigmoid(pass_to_sig)
@@ -39,18 +29,14 @@ class LogisticRegression:
         else:
             return 0
 
-    '''
-    The prediction function
-    Takes a test instance as input and outputs the predicted label
-    This function should call Helper function
-    '''
+    # Prediction function
+    # Takes a test instance as input and outputs the predicted label
+    # Calls the Helper function
     def predict(self, test_instance):
         return self.predictHelper(test_instance)
 
-    '''
-    This function takes a test set as input, call the predict function to predict a label for it,
-    and prints the accuracy, P, R, and F1 score of the positive class and negative class and the confusion matrix
-    '''
+    # Takes a test set as input, call the predict function to predict a label for it,
+    # and prints the accuracy, P, R, and F1 score of the positive class and negative class and the confusion matrix
     def predictLabels(self, test_data):
         # test_data has 1115 observations and 1364 features, 1 class label
         #       print(len(test_data))
@@ -69,7 +55,6 @@ class LogisticRegression:
   
         confusion_matrix = [[0, 0], [0, 0]]
         for i in range(len(predicted_labels)):
-            
             if predicted_labels[i] == 1 and int(test_data[i][-1]) == 1:
                 confusion_matrix[0][0] += 1
             elif predicted_labels[i] == 0 and int(test_data[i][-1]) == 1:
@@ -79,7 +64,7 @@ class LogisticRegression:
             elif predicted_labels[i] == 0 and int(test_data[i][-1]) == 0:
                 confusion_matrix[1][1] += 1
 
-        # Print the confusion matrix --> Extra
+        # Print the confusion matrix
         confusion_matrix_flag = 0
         if confusion_matrix_flag:
             print()
@@ -88,7 +73,6 @@ class LogisticRegression:
                     print(confusion_matrix[i][j], end='\t')
                 print()
 
-        
         # True pos = tp, False neg = fn, False pos = fp, True neg = tn
         tp = confusion_matrix[0][0]
         fn = confusion_matrix[0][1]
@@ -113,10 +97,8 @@ class LogisticRegression:
                 \nF1 score: {f1}')
  
 
-    '''
-    Train the Logistic Regression in a function using Stochastic Gradient Descent
-    Also compute the log-loss in this function
-    '''
+    # Train the Logistic Regression in a function using Stochastic Gradient Descent
+    # Also compute the log-loss in this function
     def trainLR(self, train_data):
         # set weights to 0 before training
         if not self.__weights:
@@ -124,14 +106,13 @@ class LogisticRegression:
 
         # Train with SGD
         sig = 0; sigmoids = []
-        # Update weights - I think calling sigmoid here may be incorrect?
-        # iterate 200 times (num of keys)
+        # iterate 200 times (num keys)
         for i in range(len(train_data.keys())):
             # Sum the linear combination of the weights and features: (B_1*x_1 + B_2*x_2 + ... + B_n*x_n)
             pass_to_sig = sum([weight*int(feature) for weight, feature in zip(self.__weights, train_data[i][:-1])])
             sig = self.sigmoid(pass_to_sig)
-            
-            # for log_loss calc (maybe unneeded)
+        
+            # for log_loss calc
             sigmoids.append(sig)
 
             # Iterate over the length of the weights (1364 elements)
@@ -160,7 +141,6 @@ class LogisticRegression:
                 \tpercent neg: {round(neg/len(self.__weights), 2)}\
                 \tpercent zero: {round(zero/len(self.__weights), 2)}')
         
-
         # Compute the log-loss/Cross-Entropy Loss
         # Minimize J(theta) = - sum(from i=1 to n) [ y_i * log(h_theta(x_i)) + (1-y_i) * log(1 - h_theta(x_i))]
         log_loss = 0
@@ -175,21 +155,11 @@ class LogisticRegression:
                 pass_to_sig = sum([weight*int(feature) for weight, feature in zip(self.__weights, train_data[i][:-1])])
                 sig = self.sigmoid(pass_to_sig)
                 log_loss += ( ((int(j[-1]) * math.log(sig))) + ((1 - int(j[-1])) * math.log(1-sig)) )
-            
-
-            # showing math - (for visual use only - delete later)
-            # if i < 5:
-            #     print(f'log loss = [({int(j[-1])} * log({sigmoids[i]})) + ( (1 - {int(j[-1])}) * log(1 - {sigmoids[i]}) )]')
-            #     print(logLoss)
-        
-        ### Is it correct to divide by 2n? n = number of observations or n = number of ..values in each observation?
-        #log_loss *= (-1)
+                
         log_loss *= (-1/ (2 * len(train_data)))
-        
         print(f'\nLog loss: {log_loss}') 
         
-
-    # Function to read the input dataset
+    # Read the input dataset
     def readData(self, path, train_or_test):
         # FIXME - randomly select the lines? might need to iterate through the dataset multiple times?
         count = 0
@@ -202,22 +172,7 @@ class LogisticRegression:
                     count += 1
 
             self.trainLR(my_dict)
-            """
-            for i in range(200):
-                selected = random.randint(1, 200)
-                line_count = 0
-                with open(path, 'r') as my_file:
-                    for line in my_file:
-                        if line_count == selected:
-                            my_dict[count] = line.strip('\n').split(',')
-                            count += 1
-                        if line_count > selected:
-                            break
-                        line_count += 1
-
             
-            self.trainLR(my_dict)
-            """
         elif train_or_test == 'test':
             with open(path, 'r') as my_file:
                 for line in my_file:
